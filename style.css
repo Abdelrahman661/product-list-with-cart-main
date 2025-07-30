@@ -1,0 +1,149 @@
+:root {
+  --red: hsl(14, 86%, 42%);
+  --green: hsl(159, 69%, 38%);
+  --white: #fff;
+  --black: #000;
+  --gray: #eaeaea;
+  --light-gray: #f8f8f8;
+  --bg-color: #fcf8f5;
+  --Rose50: hsl(20, 50%, 98%);
+  --Rose100: hsl(13, 31%, 94%);
+  --Rose300: hsl(14, 25%, 72%);
+  --Rose400: hsl(7, 20%, 60%);
+  --Rose500: hsl(12, 20%, 44%);
+  --Rose900: hsl(14, 65%, 9%);
+  --font-size: 16px;
+  --spacing: 1rem;
+}
+
+/* 
+- Mobile: 375px
+- Desktop: 1440px
+ */
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Red Hat Text", sans-serif;
+  font-optical-sizing: auto;
+  font-size: 100%;
+  font-weight: 400;
+  font-style: normal;
+  background-color: var(--bg-color);
+}
+
+.container {
+  max-width: 90%;
+  margin: 0 auto;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: stretch;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: space-between;
+}
+section {
+  width: 85%;
+}
+
+.menu-grid {
+  width: 95%;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.item-box {
+  position: relative;
+  width: 32%;
+
+  .img-box {
+    width: 100%;
+    img {
+      width: 100%;
+      border-radius: 5%;
+    }
+  }
+  .cart-button {
+    position: absolute;
+    border: solid 1px black;
+    border-radius: 20px;
+    width: 65%;
+    left: 15%;
+    height: 35px;
+    top: 58%;
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .cart-logo {
+      position: absolute;
+      top: 15%;
+      left: 18%;
+    }
+  }
+}
+.text-box {
+  position: relative;
+  padding: 40px 0px;
+  text-transform: capitalize;
+
+  .item-category {
+    color: var(--Rose400);
+  }
+  .item-name {
+    color: var(--Rose900);
+  }
+  .item-price {
+    color: var(--red);
+    font-weight: bold;
+  }
+}
+
+aside {
+  width: 30%;
+
+  .cart-container {
+    background-color: var(--white);
+    border-radius: 5%;
+    margin: 25px auto;
+    height: 50%;
+
+    .full-cart {
+      display: block;
+      &:active {
+        display: none;
+      }
+    }
+
+    .cart-header {
+      padding: 20px 20px;
+      margin: 0px;
+      color: var(--red);
+      text-transform: capitalize;
+    }
+    .empty-cart {
+      display: none;
+      text-align: center;
+      &:active {
+        display: block;
+      }
+
+      img {
+        padding: 0px 20px;
+      }
+      .cart-no-data {
+        color: var(--Rose400);
+      }
+    }
+  }
+}
