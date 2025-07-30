@@ -199,46 +199,45 @@
             <div class="full-cart">
               <div class="cart-box">
                 <article class="cart-item">
-                  <p class="order-name">classic tiramisu</p>
-                  <span class="quantity">1x</span>
-                  <span class="price">@5.50</span>
-                  <span class="total-price">$5.50</span>
-                  <button class="remove-item">
-                    <img src="assets/images/icon-remove-item.svg" alt="" />
-                  </button>
-                </article>
-                <article class="cart-item">
-                  <p class="order-name">vanilla bean creme brulee</p>
-                  <span class="quantity">4x</span>
-                  <span class="price">@7.00</span>
-                  <span class="total-price">$28.0</span>
-                  <button class="remove-item">
-                    <img src="assets/images/icon-remove-item.svg" alt="" />
-                  </button>
-                </article>
-                <article class="cart-item">
-                  <p class="order-name">vanilla panna cotta</p>
-                  <span class="quantity">2x</span>
-                  <span class="price">@6.50</span>
-                  <span class="total-price">$13.0</span>
-                  <button class="remove-item">
-                    <img src="assets/images/icon-remove-item.svg" alt="" />
-                  </button>
+                  <div class="item-flex">
+                    <p class="order-name"></p>
+                    <div class="price-flex">
+                      <span class="quantity"></span>
+                      <span class="price"></span>
+                      <span class="total-price"></span>
+                    </div>
+                  </div>
+                  <button class="remove-item"></button>
                 </article>
               </div>
-              <p class="order-total">Order total <span>$46.50</span></p>
+              <p class="order-total">
+                <span>Order total</span>
+                <span class="total-payment"></span>
+              </p>
               <p class="carbon-neutral">
                 <img src="assets/images/icon-carbon-neutral.svg" alt="" /> this
                 is a carbon neutral delivery
               </p>
               <button class="confirmation">Confirm order</button>
             </div>
-            <div class="empty-cart">
+            <!-- <div class="empty-cart">
               <img src="assets/images/illustration-empty-cart.svg" alt="" />
               <p class="cart-no-data">Your added items will appear here</p>
-            </div>
+            </div> -->
           </div>
         </aside>
+      </div>
+
+      <div class="confirmation-modal hidden">
+        <div class="modal-content">
+          <h2>✔️ Order Confirmed</h2>
+          <p>We hope you enjoy your food!</p>
+          <div class="order-list"></div>
+          <div class="order-total">
+            <strong>Order Total:</strong> <span class="total-price">$0.00</span>
+          </div>
+          <button class="start-new-order">Start New Order</button>
+        </div>
       </div>
     </main>
 
@@ -255,5 +254,6 @@
       <a href="https://www.frontendmentor.io?ref=challenge">Frontend Mentor</a>.
       Coded by <a href="#">Your Name Here</a>.
     </div>  -->
+    <script src="main.js"></script>
   </body>
 </html>
