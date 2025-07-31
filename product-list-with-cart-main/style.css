@@ -166,19 +166,6 @@ aside {
           }
         }
       }
-
-      .order-total {
-        display: flex;
-        flex-flow: row nowrap;
-        justify-content: space-between;
-        align-items: center;
-        color: var(--Rose500);
-
-        .total-payment {
-          font-size: 1rem;
-          font-weight: 700;
-        }
-      }
     }
 
     .cart-header {
@@ -253,6 +240,8 @@ aside {
   display: flex;
   justify-content: space-between;
   margin-bottom: 10px;
+  background-color: var(--bg-color);
+  padding: 20px;
 }
 
 .hidden {
@@ -267,4 +256,107 @@ aside {
   font-size: 16px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.order-box {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.order-total {
+  color: var(--Rose300);
+}
+
+.total-payment {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--Rose500);
+}
+
+.order-total-price {
+  color: var(--Rose900);
+  font-size: 1.5rem;
+}
+
+.confirmation-order-total {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gray);
+}
+
+@media (max-width: 480px) {
+  .container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  section {
+    width: 100%;
+  }
+
+  .menu-grid {
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+  }
+
+  .item-box {
+    width: 90%;
+    margin: 0 auto;
+  }
+
+  .text-box {
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  .cart-button {
+    width: 52%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  aside {
+    width: 100%;
+  }
+
+  .cart-container {
+    width: 90%;
+    margin: 20px auto;
+    padding: 15px;
+  }
+
+  .cart-header {
+    text-align: center;
+  }
+
+  .carbon-neutral {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .confirmation-modal .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+
+  .order-item {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .confirmation-order-total {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .start-new-order {
+    width: 100%;
+    margin-top: 1rem;
+  }
 }
