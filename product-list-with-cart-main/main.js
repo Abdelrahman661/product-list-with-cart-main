@@ -1,172 +1,239 @@
-let cart = {};
-const cartBox = document.querySelector(".cart-box");
-const cartCount = document.querySelector(".cart-header");
-const totalPayment = document.querySelector(".total-payment");
+class CartItem {
+  constructor(name, price, quantity = 1) {
+    this.name = name;
+    this.price = price;
+    this.quantity = quantity;
+  }
 
-document.querySelectorAll(".item-box").forEach((box) => {
-  const button = box.querySelector(".cart-button");
-  const itemName = box.querySelector(".item-name").innerText.trim();
-  const itemPrice = parseFloat(
-    box.querySelector(".item-price").innerText.replace("$", "")
-  );
+  getTotalPrice() {
+    return this.price * this.quantity;
+  }
 
-  button.addEventListener("click", () => {
-    if (!cart[itemName]) {
-      cart[itemName] = { qty: 1, price: itemPrice };
-      updateCartUI();
-      replaceWithQuantityControls(button, itemName, itemPrice);
-    }
-  });
-});
+  increment() {
+    this.quantity++;
+  }
 
-function replaceWithQuantityControls(button, itemName, itemPrice) {
-  const container = document.createElement("div");
-  container.className = "quantity-control";
-  container.style.cssText = `
-  margin: auto;
-  background:hsl(14, 86%, 42%);
-  padding: 15px 20px;
-  border-radius: 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 120px;
-  color: white;
-  position: relative;
-    bottom: 45px;
-`;
-
-  container.innerHTML = `
-  <button class="decrement" style="padding: 2px 12px; background: transparent; border: 2px solid white; border-radius: 10px; color: white; cursor:pointer;">−</button>
-  <span class="qty-count">1</span>
-  <button class="increment" style="padding: 2px 12px; background: transparent; border: 2px solid white; border-radius: 10px; color: white;cursor:pointer">+</button>
-`;
-
-  button.replaceWith(container);
-
-  container.querySelector(".increment").addEventListener("click", () => {
-    cart[itemName].qty++;
-    container.querySelector(".qty-count").innerText = cart[itemName].qty;
-    updateCartUI();
-  });
-
-  container.querySelector(".decrement").addEventListener("click", () => {
-    cart[itemName].qty--;
-    if (cart[itemName].qty === 0) {
-      delete cart[itemName];
-      updateCartUI();
-      const newButton = document.createElement("button");
-      newButton.className = "cart-button";
-      newButton.innerHTML = `<img class="cart-logo" src="assets/images/icon-add-to-cart.svg" alt="" /> Add to cart`;
-      container.replaceWith(newButton);
-      newButton.addEventListener("click", () => {
-        cart[itemName] = { qty: 1, price: itemPrice };
-        updateCartUI();
-        replaceWithQuantityControls(newButton, itemName, itemPrice);
-      });
-    } else {
-      container.querySelector(".qty-count").innerText = cart[itemName].qty;
-      updateCartUI();
-    }
-  });
+  decrement() {
+    this.quantity--;
+    return this.quantity;
+  }
 }
 
-function updateCartUI() {
-  let confirmation = document.querySelector(".confirmation");
-  confirmation.addEventListener("click", () => {
-    showConfirmationModal();
-  });
-  cartBox.innerHTML = "";
-  let total = 0;
-  let count = 0;
+class Cart {
+  constructor() {
+    this.items = {};
+  }
 
-  for (let item in cart) {
-    const { qty, price } = cart[item];
-    const itemTotal = qty * price;
-    total += itemTotal;
-    count++;
+  addItem(name, price) {
+    if (!this.items[name]) {
+      this.items[name] = new CartItem(name, price);
+    }
+  }
 
-    const article = document.createElement("article");
-    article.className = "cart-item";
-    article.innerHTML = `
-      <div class="item-flex">
-        <p class="order-name">${item}</p>
-        <div class="price-flex">
-          <span class="quantity">${qty}x</span>
-          <span class="price">@$${price.toFixed(2)}</span>
-          <span class="total-price">$${itemTotal.toFixed(2)}</span>
-        </div>
-      </div>
-      <button class="remove-item">
-        <img src="assets/images/icon-remove-item.svg" alt="remove" />
-      </button>
-    `;
+  incrementItem(name) {
+    this.items[name]?.increment();
+  }
 
-    article.querySelector(".remove-item").addEventListener("click", (e) => {
-      let target =
-        e.target.parentElement.parentElement.childNodes[1].childNodes[1]
-          .innerText;
-      e.target.parentElement.parentElement.remove();
-      delete cart[target];
-      console.log(cart);
+  decrementItem(name) {
+    if (this.items[name]?.decrement() === 0) {
+      delete this.items[name];
+    }
+  }
 
-      updateCartUI();
+  removeItem(name) {
+    delete this.items[name];
+  }
 
-      // Reset menu button
-      document.querySelectorAll(".item-box").forEach((box) => {
-        const name = box.querySelector(".item-name").innerText.trim();
-        if (name === item) {
-          const container = box.querySelector(".quantity-control");
-          if (container) {
-            const newButton = document.createElement("button");
-            newButton.className = "cart-button";
-            newButton.innerHTML = `<img class="cart-logo" src="assets/images/icon-add-to-cart.svg" alt="" /> Add to cart`;
-            container.replaceWith(newButton);
-            newButton.addEventListener("click", () => {
-              cart[item] = { qty: 1, price: price };
-              updateCartUI();
-              replaceWithQuantityControls(newButton, item, price);
-            });
-          }
-        }
+  getTotalCount() {
+    return Object.keys(this.items).length;
+  }
+
+  getTotalPayment() {
+    return Object.values(this.items).reduce(
+      (acc, item) => acc + item.getTotalPrice(),
+      0
+    );
+  }
+
+  getItems() {
+    return this.items;
+  }
+
+  clear() {
+    this.items = {};
+  }
+}
+
+class CartUI {
+  constructor(cart) {
+    this.cart = cart;
+    this.cartBox = document.querySelector(".cart-box");
+    this.cartCount = document.querySelector(".cart-header");
+    this.totalPayment = document.querySelector(".total-payment");
+    this.confirmationModal = document.querySelector(".confirmation-modal");
+
+    this.init();
+  }
+
+  init() {
+    document.querySelectorAll(".item-box").forEach((box) => {
+      const button = box.querySelector(".cart-button");
+      const name = box.querySelector(".item-name").innerText.trim();
+      const price = parseFloat(
+        box.querySelector(".item-price").innerText.replace("$", "")
+      );
+
+      button.addEventListener("click", () => {
+        this.cart.addItem(name, price);
+        this.updateUI();
+        this.replaceButtonWithControls(button, box, name, price);
       });
     });
 
-    cartBox.appendChild(article);
+    const confirmBtn = document.querySelector(".confirmation");
+    confirmBtn?.addEventListener("click", () => this.showConfirmationModal());
+
+    document.querySelector(".start-new-order").addEventListener("click", () => {
+      this.cart.clear();
+      this.updateUI();
+      this.confirmationModal.classList.add("hidden");
+      window.location.reload();
+    });
   }
 
-  cartCount.innerText = `Your cart (${count})`;
-  totalPayment.innerText = `$${total.toFixed(2)}`;
-}
-function showConfirmationModal() {
-  const modal = document.querySelector(".confirmation-modal");
-  const orderList = modal.querySelector(".order-list");
-  const totalPriceEl = modal.querySelector(".total-price");
-
-  orderList.innerHTML = "";
-  let total = 0;
-
-  for (let item in cart) {
-    const { qty, price } = cart[item];
-    const itemTotal = qty * price;
-    total += itemTotal;
-
-    const itemEl = document.createElement("div");
-    itemEl.className = "order-item";
-    itemEl.innerHTML = `
-      <span>${item} (${qty}x @ $${price.toFixed(2)})</span>
-      <span>$${itemTotal.toFixed(2)}</span>
+  replaceButtonWithControls(button, box, name, price) {
+    const container = document.createElement("div");
+    container.className = "quantity-control";
+    container.style.cssText = `
+      margin: auto;
+      background: hsl(14, 86%, 42%);
+      padding: 15px 20px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 120px;
+      color: white;
+      position: relative;
+      bottom: 45px;
     `;
-    orderList.appendChild(itemEl);
+
+    container.innerHTML = `
+      <button class="decrement" style="padding: 2px 12px; background: transparent; border: 2px solid white; border-radius: 10px; color: white; cursor:pointer;">−</button>
+      <span class="qty-count">1</span>
+      <button class="increment" style="padding: 2px 12px; background: transparent; border: 2px solid white; border-radius: 10px; color: white; cursor:pointer;">+</button>
+    `;
+
+    button.replaceWith(container);
+
+    container.querySelector(".increment").addEventListener("click", () => {
+      this.cart.incrementItem(name);
+      container.querySelector(".qty-count").innerText =
+        this.cart.getItems()[name].quantity;
+      this.updateUI();
+    });
+
+    container.querySelector(".decrement").addEventListener("click", () => {
+      this.cart.decrementItem(name);
+      const item = this.cart.getItems()[name];
+      if (!item) {
+        const newBtn = this.createAddButton(name, price, box);
+        container.replaceWith(newBtn);
+      } else {
+        container.querySelector(".qty-count").innerText = item.quantity;
+      }
+      this.updateUI();
+    });
   }
 
-  totalPriceEl.innerText = `$${total.toFixed(2)}`;
-  modal.classList.remove("hidden");
+  createAddButton(name, price, box) {
+    const newBtn = document.createElement("button");
+    newBtn.className = "cart-button";
+    newBtn.innerHTML = `<img class="cart-logo" src="assets/images/icon-add-to-cart.svg" alt="" /> Add to cart`;
 
-  document.querySelector(".start-new-order").addEventListener("click", () => {
-    cart = {};
-    updateCartUI();
-    document.querySelector(".confirmation-modal").classList.add("hidden");
-    window.location.reload();
-  });
+    newBtn.addEventListener("click", () => {
+      this.cart.addItem(name, price);
+      this.updateUI();
+      this.replaceButtonWithControls(newBtn, box, name, price);
+    });
+
+    return newBtn;
+  }
+
+  updateUI() {
+    this.cartBox.innerHTML = "";
+
+    Object.entries(this.cart.getItems()).forEach(([name, item]) => {
+      const article = document.createElement("article");
+      article.className = "cart-item";
+      article.innerHTML = `
+        <div class="item-flex">
+          <p class="order-name">${name}</p>
+          <div class="price-flex">
+            <span class="quantity">${item.quantity}x</span>
+            <span class="price">@$${item.price.toFixed(2)}</span>
+            <span class="total-price">$${item.getTotalPrice().toFixed(2)}</span>
+          </div>
+        </div>
+        <button class="remove-item">
+          <img src="assets/images/icon-remove-item.svg" alt="remove" />
+        </button>
+      `;
+
+      article.querySelector(".remove-item").addEventListener("click", () => {
+        this.cart.removeItem(name);
+        this.updateUI();
+        this.resetAddButton(name);
+      });
+
+      this.cartBox.appendChild(article);
+    });
+
+    this.cartCount.innerText = `Your cart (${this.cart.getTotalCount()})`;
+    this.totalPayment.innerText = `$${this.cart.getTotalPayment().toFixed(2)}`;
+  }
+
+  resetAddButton(name) {
+    document.querySelectorAll(".item-box").forEach((box) => {
+      const itemName = box.querySelector(".item-name").innerText.trim();
+      if (itemName === name) {
+        const control = box.querySelector(".quantity-control");
+        if (control) {
+          const newBtn = this.createAddButton(
+            name,
+            this.cart.getItems()[name]?.price ?? 0,
+            box
+          );
+          control.replaceWith(newBtn);
+        }
+      }
+    });
+  }
+
+  showConfirmationModal() {
+    const orderList = this.confirmationModal.querySelector(".order-list");
+    const totalPriceEl =
+      this.confirmationModal.querySelector(".order-total-price");
+
+    orderList.innerHTML = "";
+    Object.entries(this.cart.getItems()).forEach(([name, item]) => {
+      const div = document.createElement("div");
+      div.className = "order-item";
+      div.innerHTML = `
+      
+      
+        <span>${name} (${item.quantity}x @ $${item.price.toFixed(2)})</span>
+        <span>$${item.getTotalPrice().toFixed(2)}</span>
+      `;
+      orderList.appendChild(div);
+    });
+
+    totalPriceEl.innerText = `$${this.cart.getTotalPayment().toFixed(2)}`;
+    this.confirmationModal.classList.remove("hidden");
+  }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const cart = new Cart();
+  new CartUI(cart);
+});
